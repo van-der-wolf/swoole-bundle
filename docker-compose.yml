@@ -9,7 +9,7 @@ services:
         PHP_TAG: "${PHP_VERSION:-7.3}-cli-alpine${ALPINE_VERSION:-3.9}"
         PHP_API_VERSION: "${PHP_API_VERSION:-20180731}"
         COMPOSER_ARGS: "${COMPOSER_ARGS:-install}"
-        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.1}"
+        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.2}"
     ports:
       - 9501:9501
 
@@ -22,7 +22,7 @@ services:
         PHP_TAG: "${PHP_VERSION:-7.3}-cli-alpine${ALPINE_VERSION:-3.9}"
         PHP_API_VERSION: "${PHP_API_VERSION:-20180731}"
         COMPOSER_ARGS: "${COMPOSER_ARGS:-install}"
-        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.1}"
+        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.2}"
 
   composer-coverage:
     image: "${REGISTRY:-docker.io}/${NAMESPACE:-k911}/${IMAGE:-swoole-bundle-composer-coverage}:${TAG:-latest}"
@@ -33,7 +33,7 @@ services:
         PHP_TAG: "${PHP_VERSION:-7.3}-cli-alpine${ALPINE_VERSION:-3.9}"
         PHP_API_VERSION: "${PHP_API_VERSION:-20180731}"
         COMPOSER_ARGS: "${COMPOSER_ARGS:-install}"
-        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.1}"
+        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.2}"
     volumes:
       - "./cov:/usr/src/app/cov"
 
@@ -46,7 +46,7 @@ services:
         PHP_TAG: "${PHP_VERSION:-7.3}-cli-alpine${ALPINE_VERSION:-3.9}"
         PHP_API_VERSION: "${PHP_API_VERSION:-20180731}"
         COMPOSER_ARGS: "${COMPOSER_ARGS:-install}"
-        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.1}"
+        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.2}"
     volumes:
       - "./cov:/usr/src/app/cov"
 
@@ -60,7 +60,7 @@ services:
         PHP_TAG: "${PHP_VERSION:-7.3}-cli-alpine${ALPINE_VERSION:-3.9}"
         PHP_API_VERSION: "${PHP_API_VERSION:-20180731}"
         COMPOSER_ARGS: "${COMPOSER_ARGS:-install}"
-        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.1}"
+        SWOOLE_VERSION: "${SWOOLE_VERSION:-4.3.2}"
     volumes:
       - "./cov:/usr/src/app/cov:ro"
       - "./clover.xml:/usr/src/app/clover.xml"
