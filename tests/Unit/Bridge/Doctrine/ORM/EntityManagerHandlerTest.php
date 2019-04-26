@@ -21,7 +21,7 @@ class EntityManagerHandlerTest extends TestCase
     private $httpDriver;
 
     /**
-     * @var ObjectProphecy|RequestHandlerInterface
+     * @var RequestHandlerInterface|ObjectProphecy
      */
     private $decoratedProphecy;
 
