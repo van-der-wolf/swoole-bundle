@@ -162,7 +162,7 @@ class HttpServerConfiguration
         Assertion::true($this->existsPidFile(), 'Could not get pid file. It does not exists or server is not running in background.');
 
         /** @var string $contents */
-        $contents = \file_get_contents($this->getPidFile());
+        $contents = file_get_contents($this->getPidFile());
         Assertion::numeric($contents, 'Contents in pid file is not an integer or it is empty');
 
         return (int) $contents;
@@ -170,7 +170,7 @@ class HttpServerConfiguration
 
     public function existsPidFile(): bool
     {
-        return $this->hasPidFile() && \file_exists($this->getPidFile());
+        return $this->hasPidFile() && file_exists($this->getPidFile());
     }
 
     /**
@@ -231,8 +231,8 @@ class HttpServerConfiguration
         $swooleSettings = [];
         foreach ($this->settings as $key => $setting) {
             $swooleSettingKey = self::SWOOLE_HTTP_SERVER_CONFIGURATION[$key];
-            $swooleGetter = \sprintf('getSwoole%s', \str_replace('_', '', $swooleSettingKey));
-            if (\method_exists($this, $swooleGetter)) {
+            $swooleGetter = sprintf('getSwoole%s', str_replace('_', '', $swooleSettingKey));
+            if (method_exists($this, $swooleGetter)) {
                 $setting = $this->{$swooleGetter}();
             }
 

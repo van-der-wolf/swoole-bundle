@@ -78,7 +78,7 @@ final class Socket
 
     public function addressPort(): string
     {
-        return \sprintf('%s:%d', $this->host, $this->port);
+        return sprintf('%s:%d', $this->host, $this->port);
     }
 
     public function host(): string

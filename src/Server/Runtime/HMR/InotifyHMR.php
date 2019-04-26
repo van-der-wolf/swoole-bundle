@@ -58,13 +58,13 @@ final class InotifyHMR implements HotModuleReloaderInterface, BootableInterface
      */
     public function tick(Server $server): void
     {
-        $events = \inotify_read($this->inotify);
+        $events = inotify_read($this->inotify);
 
         if (false !== $events) {
             $server->reload();
         }
 
-        $this->watchFiles(\get_included_files());
+        $this->watchFiles(get_included_files());
     }
 
     /**
@@ -79,7 +79,7 @@ final class InotifyHMR implements HotModuleReloaderInterface, BootableInterface
         }
 
         // Files included before server start cannot be reloaded due to PHP limitations
-        $this->setNonReloadableFiles(\get_included_files());
+        $this->setNonReloadableFiles(get_included_files());
         $this->initializeInotify();
     }
 
@@ -108,14 +108,14 @@ final class InotifyHMR implements HotModuleReloaderInterface, BootableInterface
     {
         foreach ($files as $file) {
             if (!isset($this->nonReloadableFiles[$file]) && !isset($this->watchedFiles[$file])) {
-                $this->watchedFiles[$file] = \inotify_add_watch($this->inotify, $file, $this->watchMask);
+                $this->watchedFiles[$file] = inotify_add_watch($this->inotify, $file, $this->watchMask);
             }
         }
     }
 
     private function initializeInotify(): void
     {
-        $this->inotify = \inotify_init();
-        \stream_set_blocking($this->inotify, false);
+        $this->inotify = inotify_init();
+        stream_set_blocking($this->inotify, false);
     }
 }
