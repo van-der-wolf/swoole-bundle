@@ -41,7 +41,6 @@ RUN echo "pcov.enabled=1" >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini &
     echo "pcov.directory=/usr/src/app/src" >> /usr/local/etc/php/conf.d/docker-php-ext-pcov.ini
 
 FROM composer:$COMPOSER_TAG as app-installer
-FROM composer:latest as app-installer
 WORKDIR /usr/src/app
 RUN composer global require "hirak/prestissimo:^0.3" --prefer-dist --no-progress --no-suggest --classmap-authoritative --ansi
 COPY composer.json composer.lock ./
