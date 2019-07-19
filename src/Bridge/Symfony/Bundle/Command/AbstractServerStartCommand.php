@@ -315,13 +315,13 @@ abstract class AbstractServerStartCommand extends Command
     private function decodeSet($set): array
     {
         if (is_string($set)) {
-            return decode_string_as_set($set);
+            return Decoder::decodeStringAsSet($set);
         }
 
         Assertion::isArray($set);
 
         if (1 === count($set)) {
-            return decode_string_as_set($set[0]);
+            return Decoder::decodeStringAsSet($set[0]);
         }
 
         return $set;
