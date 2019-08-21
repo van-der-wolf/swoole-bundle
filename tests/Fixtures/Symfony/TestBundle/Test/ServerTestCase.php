@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace K911\Swoole\Tests\Fixtures\Symfony\TestBundle\Test;
 
 use K911\Swoole\Client\HttpClient;
+use K911\Swoole\Coroutine\CoroutinePool;
 use K911\Swoole\Tests\Fixtures\Symfony\TestAppKernel;
 use Swoole\Coroutine\Scheduler;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -46,11 +47,10 @@ class ServerTestCase extends KernelTestCase
 
     public function runAsCoroutineAndWait(callable $callable): void
     {
-        $scheduler = new Scheduler();
+        $coroutinePool = CoroutinePool::fromCoroutines($callable);
 
         try {
-            $scheduler->add($callable);
-            $scheduler->start();
+            $coroutinePool->run();
         } catch (\RuntimeException $runtimeException) {
             if (self::SWOOLE_XDEBUG_CORO_WARNING_MESSAGE !== $runtimeException->getMessage()) {
                 throw $runtimeException;

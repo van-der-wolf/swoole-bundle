@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace K911\Swoole\Coroutine;
 
 use Assert\Assertion;
-use Swoole\Coroutine;
 use Swoole\Coroutine\Channel;
-use Swoole\Event;
+use Swoole\Coroutine\Scheduler;
 use Throwable;
 
 /**
@@ -15,26 +14,27 @@ use Throwable;
  */
 final class CoroutinePool
 {
+    private $scheduler;
     private $coroutines;
     private $coroutinesCount;
     private $results = [];
+    private $exceptions = [];
     private $resultsChannel;
-    private $exception;
     private $started = false;
 
-    public function __construct(Channel $resultsChannel, callable ...$coroutines)
+    public function __construct(Scheduler $scheduler, Channel $resultsChannel, callable ...$coroutines)
     {
         $this->coroutines = $coroutines;
         $this->coroutinesCount = \count($coroutines);
         $this->resultsChannel = $resultsChannel;
+        $this->scheduler = $scheduler;
     }
 
     public static function fromCoroutines(callable ...$coroutines): self
     {
         $count = \count($coroutines);
-        $channel = new Channel($count);
 
-        return new self($channel, ...$coroutines);
+        return new self(new Scheduler(), new Channel($count), ...$coroutines);
     }
 
     /**
@@ -46,28 +46,35 @@ final class CoroutinePool
         $this->started = true;
 
         foreach ($this->coroutines as $coroutine) {
-            $this->startCoroutine($this->wrapPushResultToChannel($this->resultsChannel, $coroutine));
+            $this->scheduler->add($this->wrapCoroutine($this->resultsChannel, $coroutine));
         }
 
-        $this->waitForCompletion();
+        $this->scheduler->add($this->makeGatherResults());
+        $this->scheduler->start();
 
-        if ($this->exception instanceof Throwable) {
-            throw $this->exception;
+        // TODO: Create parent exception containing all child exceptions and throw it instead
+        if (\count($this->exceptions) > 0) {
+            throw $this->exceptions[0];
         }
 
         return $this->results;
     }
 
-    private function startCoroutine(callable $coroutine): void
+    private function makeGatherResults(): \Closure
     {
-        Assertion::false(\extension_loaded('xdebug'), 'Swoole Coroutine is incompatible with Xdebug extension. Please disable it and try again.');
-
-        \go($coroutine);
+        return function (): void {
+            while ($this->coroutinesCount > 0) {
+                $result = $this->resultsChannel->pop();
+                $outputName = $result instanceof Throwable ? 'exceptions' : 'results';
+                $this->{$outputName}[] = $result;
+                --$this->coroutinesCount;
+            }
+        };
     }
 
-    private function wrapPushResultToChannel(Channel $channel, callable $coroutine): callable
+    private function wrapCoroutine(Channel $resultChannel, callable $coroutine): \Closure
     {
-        return function () use ($coroutine, $channel): void {
+        return static function () use ($resultChannel, $coroutine): void {
             $result = null;
 
             try {
@@ -75,40 +82,7 @@ final class CoroutinePool
             } catch (\Throwable $exception) {
                 $result = $exception;
             }
-            $channel->push($result);
+            $resultChannel->push($result);
         };
-    }
-
-    private function waitForCompletion(): void
-    {
-        if (self::inCoroutine()) {
-            $this->writeResults();
-
-            return;
-        }
-
-        $this->startCoroutine([$this, 'writeResults']);
-        Event::wait();
-    }
-
-    private static function inCoroutine(): bool
-    {
-        return -1 !== Coroutine::getuid();
-    }
-
-    private function writeResults(): void
-    {
-        while ($this->coroutinesCount > 0) {
-            $result = $this->resultsChannel->pop();
-
-            if ($result instanceof Throwable) {
-                $this->exception = $result;
-
-                break;
-            }
-
-            $this->results[] = $result;
-            --$this->coroutinesCount;
-        }
     }
 }
