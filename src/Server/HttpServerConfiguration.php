@@ -354,6 +354,7 @@ class HttpServerConfiguration
     {
         foreach ($settings as $name => $value) {
             if (null !== $value) {
+                $value = $this->filterSetting($name, $value);
                 $this->validateSetting($name, $value);
                 $this->settings[$name] = $value;
             }
@@ -361,6 +362,29 @@ class HttpServerConfiguration
 
         Assertion::false($this->isDaemon() && !$this->hasPidFile(), 'Pid file is required when using daemon mode');
         Assertion::false($this->servingStaticContent() && !$this->hasPublicDir(), 'Enabling static files serving requires providing "public_dir" setting.');
+    }
+
+    /**
+     * @param string $key
+     * @param        $value
+     *
+     * @return mixed
+     */
+    private function filterSetting(string $key, $value)
+    {
+        switch ($key) {
+            case self::SWOOLE_HTTP_SERVER_CONFIG_DAEMONIZE:
+                return (bool) $value;
+                break;
+            case self::SWOOLE_HTTP_SERVER_CONFIG_BUFFER_OUTPUT_SIZE:
+            case self::SWOOLE_HTTP_SERVER_CONFIG_TASK_WORKER_COUNT:
+            case self::SWOOLE_HTTP_SERVER_CONFIG_REACTOR_COUNT:
+            case self::SWOOLE_HTTP_SERVER_CONFIG_WORKER_COUNT:
+                return (int) $value;
+                break;
+            default:
+                return $value;
+        }
     }
 
     /**
