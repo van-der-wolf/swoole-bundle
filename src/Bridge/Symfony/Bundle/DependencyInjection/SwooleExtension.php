@@ -212,17 +212,20 @@ final class SwooleExtension extends ConfigurableExtension
             ->replaceArgument('$settings', $settings)
         ;
 
-        $this->registerHttpServerHMR($hmr, $container);
+        $hmrEnabled = $this->registerHttpServerHMR($hmr, $container);
+        $container->setParameter('swoole_bundle.hmr_enabled', $hmrEnabled);
     }
 
     /**
      * @param string           $hmr
      * @param ContainerBuilder $container
+     *
+     * @return bool
      */
-    private function registerHttpServerHMR(string $hmr, ContainerBuilder $container): void
+    private function registerHttpServerHMR(string $hmr, ContainerBuilder $container): bool
     {
         if ('off' === $hmr || !$this->isDebug($container)) {
-            return;
+            return false;
         }
 
         if ('inotify' === $hmr) {
@@ -245,6 +248,8 @@ final class SwooleExtension extends ConfigurableExtension
             ->setArgument('$decorated', new Reference(HMRWorkerStartHandler::class.'.inner'))
             ->setDecoratedService(WorkerStartHandlerInterface::class)
         ;
+
+        return true;
     }
 
     /**
