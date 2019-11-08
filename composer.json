@@ -53,6 +53,7 @@
         "phpunit/php-code-coverage": "^7.0",
         "phpunit/phpcov": "^6.0",
         "phpunit/phpunit": "^8.0.4",
+        "pixelfederation/doctrine-resettable-em-bundle": "^1.0",
         "ramsey/uuid": "^3.8",
         "squizlabs/php_codesniffer": "^3.4",
         "swoole/ide-helper": "~4.4.3",
