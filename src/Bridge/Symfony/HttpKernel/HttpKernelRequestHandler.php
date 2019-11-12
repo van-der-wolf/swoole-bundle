@@ -71,31 +71,22 @@ final class HttpKernelRequestHandler implements RequestHandlerInterface, Bootabl
             $httpFoundationRequest = $this->requestFactory->make($request);
             $httpFoundationResponse = $this->kernel->handle($httpFoundationRequest);
             $this->responseProcessor->process($httpFoundationResponse, $response);
-        } catch (Throwable $e) {
-            $this->logger->critical(
-                'Unable to process request.',
-                [
-                    'error' => $e,
-                ]
-            );
 
-            return;
-        }
-
-        try {
             if ($this->kernel instanceof TerminableInterface) {
                 $this->kernel->terminate($httpFoundationRequest, $httpFoundationResponse);
             }
         } catch (Throwable $e) {
             $this->logger->critical(
-                'Unable to terminate kernel. The Swoole worker will be reset.',
+                sprintf('Unable to process request: %s', $e->getMessage()),
                 [
                     'error' => $e,
                 ]
             );
 
-            // it's probably best to rethrow the exception, so the swoole worker can be reset
-            throw $e;
+            $this->kernel->shutdown();
+            $this->kernel->boot();
+
+            return;
         }
     }
 }
