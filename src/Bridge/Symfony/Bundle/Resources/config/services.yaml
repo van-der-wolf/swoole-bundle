@@ -27,6 +27,7 @@ services:
             - '@kernel'
             - '@K911\Swoole\Bridge\Symfony\HttpFoundation\RequestFactoryInterface'
             - '@K911\Swoole\Bridge\Symfony\HttpFoundation\ResponseProcessorInterface'
+            - '@logger'
         tags:
             - { name: 'swoole_bundle.bootable_service' }
 
