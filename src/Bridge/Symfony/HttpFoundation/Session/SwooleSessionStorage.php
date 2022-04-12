@@ -16,45 +16,24 @@ final class SwooleSessionStorage implements SessionStorageInterface
 {
     public const DEFAULT_SESSION_NAME = 'SWOOLESSID';
 
-    /**
-     * @var StorageInterface
-     */
-    private $storage;
+    private StorageInterface $storage;
 
-    /**
-     * @var string
-     */
-    private $name;
+    private string $name;
 
-    /**
-     * @var string
-     */
-    private $currentId;
+    private string $currentId;
 
     /**
      * @var SessionBagInterface[]
      */
-    private $bags;
+    private array $bags;
 
-    /**
-     * @var array
-     */
-    private $data;
+    private array $data;
 
-    /**
-     * @var MetadataBag
-     */
-    private $metadataBag;
+    private ?MetadataBag $metadataBag = null;
 
-    /**
-     * @var bool
-     */
-    private $started;
+    private bool $started;
 
-    /**
-     * @var int
-     */
-    private $sessionLifetimeSeconds;
+    private int $sessionLifetimeSeconds = 10;
 
     public function __construct(StorageInterface $storage, string $name = self::DEFAULT_SESSION_NAME, int $lifetimeSeconds = 86400, MetadataBag $metadataBag = null)
     {
@@ -165,9 +144,9 @@ final class SwooleSessionStorage implements SessionStorageInterface
     /**
      * @param string $id
      *
-     * @throws \Exception
+     * @throws LogicException
      */
-    public function setId($id): void
+    public function setId(string $id): void
     {
         if ($this->started) {
             throw new LogicException('Cannot set session ID after the session has started.');
@@ -176,18 +155,12 @@ final class SwooleSessionStorage implements SessionStorageInterface
         $this->currentId = \preg_match('/^[a-f0-9]{63}$/', $id) ? $id : $this->generateId();
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -197,7 +170,7 @@ final class SwooleSessionStorage implements SessionStorageInterface
      *
      * @throws \Assert\AssertionFailedException
      */
-    public function getBag($name): SessionBagInterface
+    public function getBag(string $name): SessionBagInterface
     {
         if (!isset($this->bags[$name])) {
             throw new \InvalidArgumentException(\sprintf('The SessionBagInterface `%s` is not registered.', $name));

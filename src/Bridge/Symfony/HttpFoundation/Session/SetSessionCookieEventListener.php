@@ -8,7 +8,6 @@ use K911\Swoole\Server\Session\StorageInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -20,11 +19,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 final class SetSessionCookieEventListener implements EventSubscriberInterface
 {
-    private $sessionStorage;
-    private $sessionCookieParameters;
-    private $swooleStorage;
+    private SwooleSessionStorage $sessionStorage;
+    private array $sessionCookieParameters;
+    private StorageInterface $swooleStorage;
 
-    public function __construct(SessionStorageInterface $sessionStorage, StorageInterface $swooleStorage, array $sessionOptions = [])
+    public function __construct(SwooleSessionStorage $sessionStorage, StorageInterface $swooleStorage, array $sessionOptions = [])
     {
         $this->sessionStorage = $sessionStorage;
         $this->swooleStorage = $swooleStorage;
@@ -33,7 +32,7 @@ final class SetSessionCookieEventListener implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (!$event->isMasterRequest()) {
+        if (!$event->isMainRequest()) {
             return;
         }
 
@@ -48,7 +47,7 @@ final class SetSessionCookieEventListener implements EventSubscriberInterface
 
     public function onKernelResponse(ResponseEvent $event): void
     {
-        if (!$event->isMasterRequest() || !$this->isSessionRelated($event)) {
+        if (!$event->isMainRequest() || !$this->isSessionRelated($event)) {
             return;
         }
 
@@ -69,7 +68,7 @@ final class SetSessionCookieEventListener implements EventSubscriberInterface
 
     public function onFinishRequest(FinishRequestEvent $event): void
     {
-        if (!$event->isMasterRequest() || !$this->isSessionRelated($event)) {
+        if (!$event->isMainRequest() || !$this->isSessionRelated($event)) {
             return;
         }
 

@@ -29,7 +29,7 @@ final class ExceptionHandlerFactoryTest extends TestCase
             $kernelMock,
             $error,
             $requestMock,
-            HttpKernel::MASTER_REQUEST,
+            HttpKernel::MAIN_REQUEST,
         ])->shouldBeCalled();
         $throwableHandlerMock = $throwableHandlerProphecy->reveal();
 

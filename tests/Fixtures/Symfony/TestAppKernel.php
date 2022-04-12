@@ -17,6 +17,7 @@ use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
@@ -27,11 +28,11 @@ class TestAppKernel extends Kernel
 
     private const CONFIG_EXTENSIONS = '.{php,xml,yaml,yml}';
 
-    private $cacheKernel;
+    private ?TestCacheKernel $cacheKernel = null;
 
-    private $coverageEnabled;
+    private bool $coverageEnabled;
 
-    private $profilerEnabled = false;
+    private bool $profilerEnabled = false;
 
     public function __construct(string $environment, bool $debug)
     {
@@ -100,7 +101,7 @@ class TestAppKernel extends Kernel
         return __DIR__.'/app';
     }
 
-    public function handle(Request $request, $type = HttpKernelInterface::MASTER_REQUEST, $catch = true)
+    public function handle(Request $request, int $type = HttpKernelInterface::MAIN_REQUEST, bool $catch = true): Response
     {
         // Use CacheKernel if available.
         if (null !== $this->cacheKernel) {
@@ -123,7 +124,7 @@ class TestAppKernel extends Kernel
      *
      * @throws \Symfony\Component\Config\Exception\LoaderLoadException
      */
-    protected function configureRoutes($routes): void
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $routes->import($this->getProjectDir().'/routing.yml');
 
