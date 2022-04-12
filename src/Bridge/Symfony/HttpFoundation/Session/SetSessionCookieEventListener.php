@@ -8,7 +8,6 @@ use K911\Swoole\Server\Session\StorageInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpFoundation\Session\Storage\SessionStorageInterface;
 use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -20,11 +19,11 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 final class SetSessionCookieEventListener implements EventSubscriberInterface
 {
-    private SessionStorageInterface $sessionStorage;
+    private SwooleSessionStorage $sessionStorage;
     private array $sessionCookieParameters;
     private StorageInterface $swooleStorage;
 
-    public function __construct(SessionStorageInterface $sessionStorage, StorageInterface $swooleStorage, array $sessionOptions = [])
+    public function __construct(SwooleSessionStorage $sessionStorage, StorageInterface $swooleStorage, array $sessionOptions = [])
     {
         $this->sessionStorage = $sessionStorage;
         $this->swooleStorage = $swooleStorage;

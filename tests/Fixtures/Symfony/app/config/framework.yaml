@@ -5,4 +5,5 @@ framework:
         log: true
     test: ~
     session:
+        storage_factory_id: session.storage.factory.native
         enabled: false
