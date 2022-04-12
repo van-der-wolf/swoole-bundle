@@ -129,6 +129,11 @@ final class HttpClient implements \Serializable
         ], \JSON_THROW_ON_ERROR);
     }
 
+    public function __serialize(): array
+    {
+        return $this->serialize();
+    }
+
     /**
      * {@inheritdoc}
      *
@@ -138,6 +143,10 @@ final class HttpClient implements \Serializable
     {
         $spec = \json_decode($serialized, true, 512, \JSON_THROW_ON_ERROR);
         $this->client = self::makeSwooleClient($spec['host'], $spec['port'], $spec['ssl'], $spec['options']);
+    }
+
+    public function __unserialize($serialized): void {
+        $this->unserialize($serialized);
     }
 
     private static function makeSwooleClient(string $host, int $port = 443, bool $ssl = true, array $options = []): Client

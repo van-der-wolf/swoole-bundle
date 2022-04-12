@@ -52,7 +52,7 @@ final class ExceptionHandlerFactory
                 );
             }
 
-            return $this->throwableHandler->invoke($this->kernel, $e, $request, HttpKernelInterface::MASTER_REQUEST);
+            return $this->throwableHandler->invoke($this->kernel, $e, $request, HttpKernelInterface::MAIN_REQUEST);
         };
     }
 }
