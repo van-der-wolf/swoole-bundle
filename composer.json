@@ -137,12 +137,6 @@
             "dev-develop": "v0.8.x-dev"
         }
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:van-der-wolf/swoole-blackfire.git"
-        }
-    ],
     "config": {
         "process-timeout": 1200,
         "sort-packages": true,
